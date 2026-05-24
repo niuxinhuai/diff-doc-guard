@@ -1,0 +1,18 @@
+{
+  "changed_files": [
+    "src/api/order.ts"
+  ],
+  "docs_to_check": [
+    {
+      "name": "API inventory",
+      "docs": [
+        "docs/API.md"
+      ],
+      "reason": "接口、请求参数或响应模型变化需要同步 API 文档",
+      "files": [
+        "src/api/order.ts"
+      ]
+    }
+  ],
+  "needs_docs": true
+}

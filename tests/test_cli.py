@@ -1,7 +1,10 @@
 import json
 import unittest
 
-from diff_doc_guard.__main__ import changed_files, evaluate, result_data
+import os
+import tempfile
+
+from diff_doc_guard.__main__ import changed_files, evaluate, load_rules, result_data
 
 
 class DiffDocGuardTest(unittest.TestCase):
@@ -15,6 +18,14 @@ class DiffDocGuardTest(unittest.TestCase):
         data = result_data(["src/api/order.ts"], hits)
         self.assertTrue(data["needs_docs"])
         self.assertEqual(json.loads(json.dumps(data))["docs_to_check"][0]["docs"], ["docs/API.md"])
+
+    def test_load_rules_auto_discovers_repo_config(self):
+        with tempfile.TemporaryDirectory() as repo:
+            config = os.path.join(repo, ".docguard.json")
+            with open(config, "w", encoding="utf-8") as handle:
+                handle.write('{"rules":[{"name":"Docs","patterns":["docs/**"],"docs":["README.md"],"reason":"docs changed"}]}')
+            rules = load_rules(None, repo)
+        self.assertEqual(rules["rules"][0]["name"], "Docs")
 
 
 if __name__ == "__main__":

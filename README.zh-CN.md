@@ -1,5 +1,9 @@
 # Diff Doc Guard
 
+[![CI](https://github.com/niuxinhuai/diff-doc-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/niuxinhuai/diff-doc-guard/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.7%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 [English](README.md)
 
 根据 git diff 生成文档同步检查清单。
@@ -9,6 +13,7 @@ Diff Doc Guard 适合有“接口变化必须更新 API 文档”“公共组件
 ## 功能
 
 - 用可配置规则匹配变更文件和候选文档
+- 自动发现目标仓库根目录的 `.docguard.json`
 - 支持工作区变更、暂存区变更、diff 文件、`BASE...HEAD` 对比
 - 支持 Markdown 和 JSON 输出
 - 支持 `--exit-code`，在可能需要同步文档时返回失败码
@@ -30,6 +35,8 @@ diff-doc-guard --rules examples/docguard.json --diff examples/sample.diff
 diff-doc-guard --format json
 diff-doc-guard --exit-code
 ```
+
+可以直接查看生成示例：[`examples/output.md`](examples/output.md) 和 [`examples/output.json`](examples/output.json)。
 
 ## 规则文件
 

@@ -39,9 +39,12 @@ def read_file(path):
         return handle.read()
 
 
-def load_rules(path):
+def load_rules(path, repo="."):
     if path and os.path.exists(path):
         return json.loads(read_file(path))
+    discovered = os.path.join(repo, ".docguard.json")
+    if os.path.exists(discovered):
+        return json.loads(read_file(discovered))
     return DEFAULT_RULES
 
 
@@ -179,7 +182,7 @@ def main(argv=None):
 
     diff_text = read_file(args.diff) if args.diff else git_diff(args.repo, args.staged, args.base)
     files = changed_files(diff_text)
-    hits = evaluate(files, load_rules(args.rules))
+    hits = evaluate(files, load_rules(args.rules, args.repo))
     if args.format == "json":
         checklist = json.dumps(result_data(files, hits), ensure_ascii=False, indent=2) + "\n"
     else:

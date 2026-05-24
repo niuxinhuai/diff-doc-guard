@@ -1,5 +1,9 @@
 # Diff Doc Guard
 
+[![CI](https://github.com/niuxinhuai/diff-doc-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/niuxinhuai/diff-doc-guard/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.7%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 [中文文档](README.zh-CN.md)
 
 Generate documentation sync checklists from git diffs.
@@ -9,6 +13,7 @@ Diff Doc Guard helps teams enforce rules like "API changes must update API docs"
 ## Features
 
 - Matches changed files against configurable documentation rules.
+- Automatically discovers `.docguard.json` in the target repository.
 - Supports working-tree, staged, explicit diff file, and `BASE...HEAD` comparisons.
 - Supports Markdown and JSON output.
 - Can return a failing exit code when documentation may need updates.
@@ -30,6 +35,8 @@ diff-doc-guard --rules examples/docguard.json --diff examples/sample.diff
 diff-doc-guard --format json
 diff-doc-guard --exit-code
 ```
+
+See generated examples in [`examples/output.md`](examples/output.md) and [`examples/output.json`](examples/output.json).
 
 ## Rule File
 
