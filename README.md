@@ -1,29 +1,37 @@
 # Diff Doc Guard
 
-根据 `git diff` 判断哪些文档可能需要同步，生成可贴到 PR 的文档检查清单。
+[中文文档](README.zh-CN.md)
 
-它适合有“代码变更必须同步文档”约定的团队。默认走本地规则，配置 API Key 后可以让模型补充变更说明和遗漏风险。
+Generate documentation sync checklists from git diffs.
 
-## 快速开始
+Diff Doc Guard helps teams enforce rules like "API changes must update API docs" without building a heavy review bot. It is local-first, dependency-light, and works in CI.
 
-```bash
-python3 -m diff_doc_guard --repo .
-```
+## Features
 
-使用自定义规则：
+- Matches changed files against configurable documentation rules.
+- Supports working-tree, staged, explicit diff file, and `BASE...HEAD` comparisons.
+- Supports Markdown and JSON output.
+- Can return a failing exit code when documentation may need updates.
+- Optional AI polishing through an OpenAI-compatible endpoint.
 
-```bash
-python3 -m diff_doc_guard --rules examples/docguard.json --diff examples/sample.diff
-```
-
-启用 AI 增强：
+## Install
 
 ```bash
-export AI_API_KEY="your-key"
-python3 -m diff_doc_guard --repo . --ai
+python3 -m pip install -e .
 ```
 
-## 规则格式
+## Usage
+
+```bash
+diff-doc-guard --repo .
+diff-doc-guard --staged
+diff-doc-guard --base origin/main
+diff-doc-guard --rules examples/docguard.json --diff examples/sample.diff
+diff-doc-guard --format json
+diff-doc-guard --exit-code
+```
+
+## Rule File
 
 ```json
 {
@@ -32,10 +40,24 @@ python3 -m diff_doc_guard --repo . --ai
       "name": "API inventory",
       "patterns": ["src/api/**", "common/network/**"],
       "docs": ["docs/API.md"],
-      "reason": "接口枚举或请求模型变化需要同步 API 文档"
+      "reason": "API changes should update API documentation"
     }
   ]
 }
+```
+
+## AI Polishing
+
+```bash
+export AI_API_KEY="your-key"
+diff-doc-guard --repo . --ai
+```
+
+## Development
+
+```bash
+python3 -m pip install -e .
+python3 -m unittest discover -s tests
 ```
 
 ## License

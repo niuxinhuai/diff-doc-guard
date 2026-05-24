@@ -8,6 +8,7 @@ import sys
 import urllib.error
 import urllib.request
 
+from . import __version__
 
 DEFAULT_RULES = {
     "rules": [
@@ -44,9 +45,15 @@ def load_rules(path):
     return DEFAULT_RULES
 
 
-def git_diff(repo):
+def git_diff(repo, staged=False, base=None):
     try:
-        return subprocess.check_output(["git", "-C", repo, "diff", "--cached", "--", "."], stderr=subprocess.DEVNULL).decode("utf-8", "replace")
+        if base:
+            command = ["git", "-C", repo, "diff", "%s...HEAD" % base, "--", "."]
+        elif staged:
+            command = ["git", "-C", repo, "diff", "--cached", "--", "."]
+        else:
+            command = ["git", "-C", repo, "diff", "HEAD", "--", "."]
+        return subprocess.check_output(command, stderr=subprocess.DEVNULL).decode("utf-8", "replace")
     except subprocess.CalledProcessError:
         return ""
 
@@ -88,6 +95,14 @@ def evaluate(files, rules):
     return hits
 
 
+def result_data(files, hits):
+    return {
+        "changed_files": files,
+        "docs_to_check": hits,
+        "needs_docs": bool(hits),
+    }
+
+
 def render(files, hits):
     output = ["# Documentation Sync Checklist", ""]
     if not files:
@@ -118,12 +133,12 @@ def render(files, hits):
     return "\n".join(output)
 
 
-def call_ai(diff_text, checklist):
+def call_ai(diff_text, checklist, model=None, base_url=None):
     api_key = os.getenv("AI_API_KEY")
     if not api_key:
         raise RuntimeError("AI_API_KEY is not set")
-    base_url = os.getenv("AI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-    model = os.getenv("AI_MODEL", "gpt-4o-mini")
+    base_url = (base_url or os.getenv("AI_BASE_URL", "https://api.openai.com/v1")).rstrip("/")
+    model = model or os.getenv("AI_MODEL", "gpt-4o-mini")
     payload = {
         "model": model,
         "messages": [
@@ -150,22 +165,35 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description="Generate documentation sync reminders from git diff.")
     parser.add_argument("--repo", default=".", help="Git repository path")
     parser.add_argument("--diff", help="Read diff from file instead of git diff --cached")
+    parser.add_argument("--staged", action="store_true", help="Inspect staged changes only")
+    parser.add_argument("--base", help="Compare BASE...HEAD, useful in CI")
     parser.add_argument("--rules", help="JSON rule file")
+    parser.add_argument("--format", choices=["markdown", "json"], default="markdown", help="Output format")
+    parser.add_argument("--exit-code", action="store_true", help="Exit with code 2 when docs may need updates")
     parser.add_argument("--ai", action="store_true", help="Use an OpenAI-compatible model to refine the checklist")
+    parser.add_argument("--model", help="Override AI_MODEL for --ai")
+    parser.add_argument("--base-url", help="Override AI_BASE_URL for --ai")
     parser.add_argument("--output", help="Write result to a file")
+    parser.add_argument("--version", action="version", version="diff-doc-guard %s" % __version__)
     args = parser.parse_args(argv)
 
-    diff_text = read_file(args.diff) if args.diff else git_diff(args.repo)
+    diff_text = read_file(args.diff) if args.diff else git_diff(args.repo, args.staged, args.base)
     files = changed_files(diff_text)
     hits = evaluate(files, load_rules(args.rules))
-    checklist = render(files, hits)
-    result = call_ai(diff_text, checklist) if args.ai else checklist
+    if args.format == "json":
+        checklist = json.dumps(result_data(files, hits), ensure_ascii=False, indent=2) + "\n"
+    else:
+        checklist = render(files, hits)
+    result = call_ai(diff_text, checklist, args.model, args.base_url) if args.ai else checklist
     if args.output:
         with open(args.output, "w", encoding="utf-8") as handle:
             handle.write(result)
     else:
         sys.stdout.write(result)
+    if args.exit_code and hits:
+        return 2
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
