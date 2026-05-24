@@ -13,6 +13,7 @@ Diff Doc Guard helps teams enforce rules like "API changes must update API docs"
 ## Features
 
 - Matches changed files against configurable documentation rules.
+- Can bootstrap a starter `.docguard.json` with `--init-rules`.
 - Automatically discovers `.docguard.json` in the target repository.
 - Supports working-tree, staged, explicit diff file, and `BASE...HEAD` comparisons.
 - Supports Markdown and JSON output.
@@ -45,12 +46,15 @@ You can also download built wheel and sdist files from the latest GitHub Release
 
 ```bash
 diff-doc-guard --repo .
+diff-doc-guard --repo . --init-rules
 diff-doc-guard --staged
 diff-doc-guard --base origin/main
 diff-doc-guard --rules examples/docguard.json --diff examples/sample.diff
 diff-doc-guard --format json
 diff-doc-guard --exit-code
 ```
+
+Run `--init-rules` once in a repository to create a starter `.docguard.json`, then edit the generated patterns and docs for your project.
 
 See generated examples in [`examples/output.md`](examples/output.md) and [`examples/output.json`](examples/output.json).
 

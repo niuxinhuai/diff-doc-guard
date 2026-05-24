@@ -13,6 +13,7 @@ Diff Doc Guard 适合有“接口变化必须更新 API 文档”“公共组件
 ## 功能
 
 - 用可配置规则匹配变更文件和候选文档
+- 支持 `--init-rules` 初始化 `.docguard.json` 规则文件
 - 自动发现目标仓库根目录的 `.docguard.json`
 - 支持工作区变更、暂存区变更、diff 文件、`BASE...HEAD` 对比
 - 支持 Markdown 和 JSON 输出
@@ -45,12 +46,15 @@ python3 -m pip install -e .
 
 ```bash
 diff-doc-guard --repo .
+diff-doc-guard --repo . --init-rules
 diff-doc-guard --staged
 diff-doc-guard --base origin/main
 diff-doc-guard --rules examples/docguard.json --diff examples/sample.diff
 diff-doc-guard --format json
 diff-doc-guard --exit-code
 ```
+
+在仓库里执行一次 `--init-rules` 可以生成初始 `.docguard.json`，之后按项目实际路径调整 patterns 和 docs。
 
 可以直接查看生成示例：[`examples/output.md`](examples/output.md) 和 [`examples/output.json`](examples/output.json)。
 

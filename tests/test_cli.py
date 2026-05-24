@@ -4,7 +4,7 @@ import unittest
 import os
 import tempfile
 
-from diff_doc_guard.__main__ import changed_files, evaluate, load_rules, result_data
+from diff_doc_guard.__main__ import changed_files, evaluate, init_rules_file, load_rules, result_data
 
 
 class DiffDocGuardTest(unittest.TestCase):
@@ -26,6 +26,13 @@ class DiffDocGuardTest(unittest.TestCase):
                 handle.write('{"rules":[{"name":"Docs","patterns":["docs/**"],"docs":["README.md"],"reason":"docs changed"}]}')
             rules = load_rules(None, repo)
         self.assertEqual(rules["rules"][0]["name"], "Docs")
+
+    def test_init_rules_file_writes_default_config(self):
+        with tempfile.TemporaryDirectory() as repo:
+            path = init_rules_file(repo)
+            self.assertTrue(os.path.exists(path))
+            rules = load_rules(None, repo)
+        self.assertTrue(rules["rules"])
 
 
 if __name__ == "__main__":

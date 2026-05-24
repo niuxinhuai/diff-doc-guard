@@ -48,6 +48,16 @@ def load_rules(path, repo="."):
     return DEFAULT_RULES
 
 
+def init_rules_file(repo=".", force=False):
+    path = os.path.join(repo, ".docguard.json")
+    if os.path.exists(path) and not force:
+        raise RuntimeError("%s already exists. Use --force to overwrite." % path)
+    with open(path, "w", encoding="utf-8") as handle:
+        json.dump(DEFAULT_RULES, handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+    return path
+
+
 def git_diff(repo, staged=False, base=None):
     try:
         if base:
@@ -171,6 +181,8 @@ def main(argv=None):
     parser.add_argument("--staged", action="store_true", help="Inspect staged changes only")
     parser.add_argument("--base", help="Compare BASE...HEAD, useful in CI")
     parser.add_argument("--rules", help="JSON rule file")
+    parser.add_argument("--init-rules", action="store_true", help="Create a starter .docguard.json in --repo")
+    parser.add_argument("--force", action="store_true", help="Overwrite files created by --init-rules")
     parser.add_argument("--format", choices=["markdown", "json"], default="markdown", help="Output format")
     parser.add_argument("--exit-code", action="store_true", help="Exit with code 2 when docs may need updates")
     parser.add_argument("--ai", action="store_true", help="Use an OpenAI-compatible model to refine the checklist")
@@ -179,6 +191,11 @@ def main(argv=None):
     parser.add_argument("--output", help="Write result to a file")
     parser.add_argument("--version", action="version", version="diff-doc-guard %s" % __version__)
     args = parser.parse_args(argv)
+
+    if args.init_rules:
+        path = init_rules_file(args.repo, args.force)
+        sys.stdout.write("Created %s\n" % path)
+        return 0
 
     diff_text = read_file(args.diff) if args.diff else git_diff(args.repo, args.staged, args.base)
     files = changed_files(diff_text)
