@@ -67,6 +67,15 @@ python3 -m pip install -e .
 python3 -m unittest discover -s tests
 ```
 
+## Release
+
+Tagged releases build Python packages through GitHub Actions. To publish on PyPI, configure PyPI Trusted Publishing for this repository, then push a tag:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
 ## License
 
 MIT
