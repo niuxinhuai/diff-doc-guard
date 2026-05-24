@@ -26,6 +26,12 @@ class ProjectAssetsTest(unittest.TestCase):
         self.assertIn("[project.urls]", text)
         self.assertIn("build-backend", text)
 
+    def test_release_workflow_is_safe_before_pypi_setup(self):
+        with open(os.path.join(ROOT, ".github/workflows/release.yml"), "r", encoding="utf-8") as handle:
+            text = handle.read()
+        self.assertIn("softprops/action-gh-release", text)
+        self.assertIn("vars.PUBLISH_TO_PYPI == 'true'", text)
+
 
 if __name__ == "__main__":
     unittest.main()

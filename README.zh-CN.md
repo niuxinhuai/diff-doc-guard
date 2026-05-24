@@ -69,7 +69,7 @@ python3 -m unittest discover -s tests
 
 ## 发布
 
-推送 tag 后，GitHub Actions 会构建 Python 包。若要发布到 PyPI，请先在 PyPI 配置 Trusted Publishing，然后推送 tag：
+推送 tag 后，GitHub Actions 会构建 Python 包并创建 GitHub Release。PyPI 发布默认关闭；若要发布到 PyPI，请先配置 Trusted Publishing，并设置仓库变量 ，然后推送 tag：
 
 ```bash
 git tag v0.1.0
