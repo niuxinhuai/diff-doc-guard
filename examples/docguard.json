@@ -1,0 +1,22 @@
+{
+  "rules": [
+    {
+      "name": "API inventory",
+      "patterns": ["src/api/**", "common/network/**", "services/**"],
+      "docs": ["docs/API.md"],
+      "reason": "接口、请求参数或响应模型变化需要同步 API 文档"
+    },
+    {
+      "name": "UI inventory",
+      "patterns": ["src/components/**", "common/common_view/**"],
+      "docs": ["docs/UI.md"],
+      "reason": "公共组件变化需要同步 UI 使用说明"
+    },
+    {
+      "name": "Operations",
+      "patterns": ["scripts/**", "sh/**", "*.sh"],
+      "docs": ["docs/BUILD_AND_RUN.md"],
+      "reason": "构建、启动或发布脚本变化需要同步操作文档"
+    }
+  ]
+}

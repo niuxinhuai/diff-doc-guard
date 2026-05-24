@@ -1,0 +1,15 @@
+[project]
+name = "diff-doc-guard"
+version = "0.1.0"
+description = "Generate documentation sync checklists from git diffs."
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [{ name = "Diff Doc Guard contributors" }]
+
+[project.scripts]
+diff-doc-guard = "diff_doc_guard.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
