@@ -16,6 +16,7 @@ class ProjectAssetsTest(unittest.TestCase):
             "CODE_OF_CONDUCT.md",
             ".github/ISSUE_TEMPLATE/bug_report.yml",
             ".github/ISSUE_TEMPLATE/feature_request.yml",
+            ".github/dependabot.yml",
             ".github/workflows/release.yml",
         ]:
             self.assert_exists(path)
@@ -31,6 +32,12 @@ class ProjectAssetsTest(unittest.TestCase):
             text = handle.read()
         self.assertIn("softprops/action-gh-release", text)
         self.assertIn("vars.PUBLISH_TO_PYPI == 'true'", text)
+
+    def test_readme_has_non_pypi_install_path(self):
+        with open(os.path.join(ROOT, "README.md"), "r", encoding="utf-8") as handle:
+            text = handle.read()
+        self.assertIn("pipx install git+", text)
+        self.assertIn("GitHub Release", text)
 
 
 if __name__ == "__main__":
